@@ -1,0 +1,22 @@
+on:
+  push: # pushイベントをトリガーに設定
+    branches:
+      - main # mainブランチへのpushを監視
+name: デプロイ # ワークフローの名前
+jobs:
+  web-deploy: # ジョブ名
+    name: デプロイ # ジョブの表示名
+    runs-on: ubuntu-latest # ジョブを実行するランナー環境
+    steps: # ジョブのステップ
+    - name: Get latest code # 最新のコードを取得するステップ
+      uses: actions/checkout@v3 # コードチェックアウト用のアクション
+    
+    - name: Sync files # ファイルを同期するステップ
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4 # FTPデプロイ用のアクション
+      with:
+        server: ${{ secrets.FTP_SERVER }} # FTPサーバのアドレス（シークレットから取得）
+        username: ${{ secrets.FTP_USERNAME }} # FTPユーザー名（シークレットから取得）
+        password: ${{ secrets.FTP_PASSWORD }} # FTPパスワード（シークレットから取得）
+        local-dir: ./ # ローカルのディレクトリ
+        server-dir: /ディレクトリ名（最後スラッシュで終わる書き方）/ # サーバ上のディレクトリ
+        delete: true # 削除も同期
